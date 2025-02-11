@@ -56,6 +56,21 @@ try:
     # Convert list to dataframe
     dataMK = pd.DataFrame(dataMK)
 
+    otherrows = soup.find_all('table', class_='GridStyle')
+    matkul_terambil = otherrows[0].find_all('tr', valign='top')
+
+    dataMKsendiri = {'kode': [], 'nama_mk': [], 'sks': [], 'kelas': [], 'alih_kredit': []}
+
+    for matkul in matkul_terambil:
+        raw = [td.text for td in matkul.find_all('td')]
+        dataMKsendiri['kode'].append(raw[0])
+        dataMKsendiri['nama_mk'].append(raw[1])
+        dataMKsendiri['sks'].append(raw[2])
+        dataMKsendiri['kelas'].append(raw[3])
+        dataMKsendiri['alih_kredit'].append(raw[4])
+
+    dataMKsendiri = pd.DataFrame(dataMKsendiri)
+
     # Data matakuliah sem 4
     courses = [
         "Pemrograman Jaringan",

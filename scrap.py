@@ -16,6 +16,11 @@ response = session.get(URL)
 print('Status code:', response.status_code)
 soup = BeautifulSoup(response.text, 'lxml')
 
+# Get SiAkad Real Time
+form = soup.find_all('form')
+tr = form[0].find_all('tr')
+time = tr[1].find_all('td')[0].text.split('Tanggal: ')[1]
+
 # Select data mata kuliah
 rows = soup.find_all('table', class_='FilterBox')
 data = rows[1].find_all('tr')
@@ -54,6 +59,7 @@ mksem4 = dataMK[dataMK['nama_mk'].str.contains(pattern)].reset_index(drop=True)
 
 # Display data
 st.header("FRS Mata Kuliah Semester 4")
+st.write("Siakad Time: " + time)
 
 tab1, tab2 = st.tabs(["Semester 4 Courses", "All Courses"])
 

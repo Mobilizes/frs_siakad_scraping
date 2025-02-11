@@ -50,7 +50,7 @@ dataMK = pd.DataFrame(dataMK)
 # Data matakuliah sem 4
 courses = [
     "Pemrograman Jaringan",
-    "Probabilitas dan Statistika",
+    "Probabilitas dan Statistik",
     "Otomata",
     "Manajemen Basis Data",
     "Perancangan dan Analisis Algoritma",

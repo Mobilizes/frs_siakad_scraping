@@ -4,11 +4,13 @@ import requests
 import pandas as pd
 import setup
 import pywhatkit
+from data.data import kelas_list
 
 URL = "https://akademik.its.ac.id/list_frs.php"
 
 counter = 0
-old_mksem4 = pd.DataFrame(columns=['Kode', 'Nama MK', 'Kelas', 'Ketersediaan', 'Status'])
+lecturer_list = pd.DataFrame(kelas_list)
+old_mksem4 = pd.DataFrame(columns=['Kode', 'Nama MK', 'Kelas', 'Ketersediaan', 'Status', 'Kode Dosen'])
 
 while True:
     try:
@@ -33,7 +35,7 @@ while True:
         matkul_depart = td_matkul[2].find_all('option')
 
         # Create list for dataframe
-        dataMK = {'Kode': [], 'Nama MK': [], 'Kelas': [], 'Ketersediaan': [], 'Status': []}
+        dataMK = {'Kode': [], 'Nama MK': [], 'Kelas': [], 'Ketersediaan': [], 'Status': [], 'Kode Dosen': []}
 
         # Insert data to dataframe
         for matkul in matkul_depart:
@@ -43,8 +45,14 @@ while True:
             dataMK['Kelas'].append(raw[-2])
             dataMK['Ketersediaan'].append(raw[-1])
             
+            kode_dosen = lecturer_list[(lecturer_list['nama_mata_kuliah'] == ' '.join(raw[1:-2])) & (lecturer_list['kelas'] == raw[-2])]['kode_dosen'].values
+            if len(kode_dosen) > 0:
+                dataMK['Kode Dosen'].append(kode_dosen[0])
+            else:
+                dataMK['Kode Dosen'].append('-')
+            
             status = raw[-1].split('/')
-            if status[0] < status[1]:
+            if int(status[0]) < int(status[1]):
                 dataMK['Status'].append('Tersedia')
             else:
                 dataMK['Status'].append('Penuh')
@@ -76,7 +84,7 @@ while True:
         else:
             for i in range(0, num_mk):
                 if mksem4['Ketersediaan'][i] != old_mksem4['Ketersediaan'][i]:
-                    matkul_changed = f"{mksem4['Nama MK'][i]} {mksem4['Kelas'][i]} {mksem4['Ketersediaan'][i]}"
+                    matkul_changed = f"{mksem4['Nama MK'][i]} {mksem4['Kelas'][i]} {mksem4['Ketersediaan'][i]} {mksem4['Kode Dosen'][i]}"
                     changes.append(matkul_changed)
                     print(matkul_changed)
 

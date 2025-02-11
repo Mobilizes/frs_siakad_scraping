@@ -4,8 +4,10 @@ import requests
 import pandas as pd
 import streamlit as st
 import setup
+from data.data import kelas_list
 
 URL = "https://akademik.its.ac.id/list_frs.php"
+lecturer_list = pd.DataFrame(kelas_list)
 
 try:
     # Use login credential
@@ -29,7 +31,7 @@ try:
     matkul_depart = td_matkul[2].find_all('option')
 
     # Create list for dataframe
-    dataMK = {'Kode': [], 'Nama MK': [], 'Kelas': [], 'Ketersediaan': [], 'Status': []}
+    dataMK = {'Kode': [], 'Nama MK': [], 'Kelas': [], 'Ketersediaan': [], 'Status': [], 'Kode Dosen': []}
 
     # Insert data to dataframe
     for matkul in matkul_depart:
@@ -39,8 +41,14 @@ try:
         dataMK['Kelas'].append(raw[-2])
         dataMK['Ketersediaan'].append(raw[-1])
         
+        kode_dosen = lecturer_list[(lecturer_list['nama_mata_kuliah'] == ' '.join(raw[1:-2])) & (lecturer_list['kelas'] == raw[-2])]['kode_dosen'].values
+        if len(kode_dosen) > 0:
+            dataMK['Kode Dosen'].append(kode_dosen[0])
+        else:
+            dataMK['Kode Dosen'].append('-')
+        
         status = raw[-1].split('/')
-        if status[0] < status[1]:
+        if int(status[0]) < int(status[1]):
             dataMK['Status'].append('Tersedia')
         else:
             dataMK['Status'].append('Penuh')

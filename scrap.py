@@ -16,6 +16,8 @@ response = session.get(URL)
 print(response.status_code)
 soup = BeautifulSoup(response.text, 'lxml')
 
+print(soup.prettify())
+
 # Select data mata kuliah
 rows = soup.find_all('table', class_='FilterBox')
 data = rows[1].find_all('tr')

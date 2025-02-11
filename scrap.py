@@ -3,13 +3,13 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import streamlit as st
+import setup
 
 URL = "https://akademik.its.ac.id/list_frs.php"
-SESSION_COOKIE = 'kvds2aclksbtstn3h8eha3tov1'
 
 # Use login credential
 session = requests.Session()
-session.cookies.setdefault('PHPSESSID', SESSION_COOKIE)
+session.cookies.setdefault('PHPSESSID', setup.SESSION_COOKIE)
 
 # Get HTML data
 response = session.get(URL)
@@ -83,5 +83,5 @@ with tab3:
     selected_course_all = st.selectbox("Select Course", dataMK['Nama MK'].unique())
     st.table(dataMK[dataMK['Nama MK'] == selected_course_all])
 
-time.sleep(5)
+time.sleep(setup.RELOAD_WAIT_TIME)
 st.rerun()

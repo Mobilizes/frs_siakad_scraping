@@ -15,7 +15,13 @@
     pip install -r requirements.txt
     ```
 
-3. Run Streamlit (if u want to use streamlit app)
+3. Set up following variables in `setup.example.py` then rename the file to `setup.py`
+    ```ruby
+    SESSION_COOKIE = 'YOUR_SESSION_COOKIE'
+    RELOAD_WAIT_TIME = 10
+    ```
+
+4. Run Streamlit (if u want to use streamlit app)
     ```
     streamlit run scrap.py
     ```

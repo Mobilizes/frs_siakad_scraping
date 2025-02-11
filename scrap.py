@@ -13,10 +13,8 @@ session.cookies.setdefault('PHPSESSID', SESSION_COOKIE)
 
 # Get HTML data
 response = session.get(URL)
-print(response.status_code)
+print('Status code:', response.status_code)
 soup = BeautifulSoup(response.text, 'lxml')
-
-print(soup.prettify())
 
 # Select data mata kuliah
 rows = soup.find_all('table', class_='FilterBox')

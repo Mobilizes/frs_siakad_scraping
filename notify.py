@@ -80,9 +80,10 @@ while True:
                 print(matkul_changed)
 
     # Send notification to WhatsApp
-    msg = '\n'.join(changes)
-    pywhatkit.sendwhatmsg_instantly(setup.PHONE_NUMBER, msg, wait_time=10, tab_close=True)
-    pywhatkit.sendwhatmsg_to_group_instantly(setup.GROUP_ID, msg, wait_time=10, tab_close=True)
+    if len(changes) > 1:
+        msg = '\n'.join(changes)
+        pywhatkit.sendwhatmsg_instantly(setup.PHONE_NUMBER, msg, wait_time=10, tab_close=True)
+        # pywhatkit.sendwhatmsg_to_group_instantly(setup.GROUP_ID, msg, wait_time=10, tab_close=True)
     
     # Wait for desired minutes
     time.sleep(setup.RELOAD_WAIT_TIME)

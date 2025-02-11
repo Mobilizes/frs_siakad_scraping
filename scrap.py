@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 URL = "https://akademik.its.ac.id/list_frs.php"
-SESSION_COOKIE = {{YOUR SESSION COOKIE}}
+SESSION_COOKIE = ''
 
 # Use login credential
 session = requests.Session()

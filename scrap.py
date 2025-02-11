@@ -5,7 +5,7 @@ import pandas as pd
 import streamlit as st
 
 URL = "https://akademik.its.ac.id/list_frs.php"
-SESSION_COOKIE = ''
+SESSION_COOKIE = 'kvds2aclksbtstn3h8eha3tov1'
 
 # Use login credential
 session = requests.Session()
@@ -19,7 +19,7 @@ soup = BeautifulSoup(response.text, 'lxml')
 # Get SiAkad Real Time
 form = soup.find_all('form')
 tr = form[0].find_all('tr')
-time = tr[1].find_all('td')[0].text.split('Tanggal: ')[1]
+siakad_time = tr[1].find_all('td')[0].text.split('Tanggal: ')[1]
 
 # Select data mata kuliah
 rows = soup.find_all('table', class_='FilterBox')
@@ -28,15 +28,21 @@ td_matkul = data[0].find_all('td')
 matkul_depart = td_matkul[2].find_all('option')
 
 # Create list for dataframe
-dataMK = {'kode': [], 'nama_mk': [], 'kelas': [], 'ketersediaan': []}
+dataMK = {'Kode': [], 'Nama MK': [], 'Kelas': [], 'Ketersediaan': [], 'Status': []}
 
 # Insert data to dataframe
 for matkul in matkul_depart:
     raw = matkul.text.split()
-    dataMK['kode'].append(raw[0])
-    dataMK['nama_mk'].append(' '.join(raw[1:-2]))
-    dataMK['kelas'].append(raw[-2])
-    dataMK['ketersediaan'].append(raw[-1])
+    dataMK['Kode'].append(raw[0])
+    dataMK['Nama MK'].append(' '.join(raw[1:-2]))
+    dataMK['Kelas'].append(raw[-2])
+    dataMK['Ketersediaan'].append(raw[-1])
+    
+    status = raw[-1].split('/')
+    if status[0] < status[1]:
+        dataMK['Status'].append('Tersedia')
+    else:
+        dataMK['Status'].append('Penuh')
 
 # Convert list to dataframe
 dataMK = pd.DataFrame(dataMK)
@@ -54,19 +60,28 @@ courses = [
 
 # Filtering data
 pattern = '|'.join(courses)
-mksem4 = dataMK[dataMK['nama_mk'].str.contains(pattern)].reset_index(drop=True)
+mksem4 = dataMK[dataMK['Nama MK'].str.contains(pattern)].reset_index(drop=True)
 
 
 # Display data
 st.header("FRS Mata Kuliah Semester 4")
-st.write("Siakad Time: " + time)
+st.write("Siakad Time: " + siakad_time)
 
-tab1, tab2 = st.tabs(["Semester 4 Courses", "All Courses"])
+tab1, tab2, tab3 = st.tabs(["Available" ,"Semester 4 Courses", "All Courses"])
 
 with tab1:
-    selected_course = st.selectbox("Select Course", mksem4['nama_mk'].unique())
-    st.table(mksem4[mksem4['nama_mk'] == selected_course])
-    
+    courses = mksem4['Nama MK'].unique()
+    for course in courses:
+        st.write(course)
+        st.table(mksem4[(mksem4['Nama MK'] == course) & (mksem4['Status'] == 'Tersedia')])
+
 with tab2:
-    selected_course_all = st.selectbox("Select Course", dataMK['nama_mk'].unique())
-    st.table(dataMK[dataMK['nama_mk'] == selected_course_all])
+    selected_course = st.selectbox("Select Course", mksem4['Nama MK'].unique())
+    st.table(mksem4[mksem4['Nama MK'] == selected_course])
+    
+with tab3:
+    selected_course_all = st.selectbox("Select Course", dataMK['Nama MK'].unique())
+    st.table(dataMK[dataMK['Nama MK'] == selected_course_all])
+
+time.sleep(5)
+st.rerun()
